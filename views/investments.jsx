@@ -18,14 +18,17 @@ class Investments extends React.Component {
 
     return(
       <Layout title="Investments">
+        <a href="/investments/new" className="NewInvestmentButton Button Button-Primary">Add New Investment</a>
         <table className="rwd-table">
-          <tr>
-            <th>Client</th>
-            <th>USD Investment</th>
-            <th>Cryptocurrency</th>
-            <th>Number of coins purchased</th>
-            <th>Purchase price</th>
-          </tr>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>USD Investment</th>
+              <th>Cryptocurrency</th>
+              <th>Number of coins purchased</th>
+              <th>Purchase price</th>
+            </tr>
+          </thead>
           <tbody>
             {investmentNodes}
           </tbody>

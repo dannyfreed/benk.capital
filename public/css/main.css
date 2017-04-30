@@ -38,6 +38,30 @@ a{
 a:hover{
   text-decoration: none;
 }
+.Button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 295px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: 0;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  flex: 0 0 24px;
+  outline: none;
+}
+
+.Button-Primary{
+  color: white;
+  background: #647df9;
+  text-align: center;
+}
+.Button-Primary:hover{
+  background: #4861dc;
+}
 
 /*Navbar*/
 .Navbar {
@@ -69,7 +93,9 @@ a:hover{
   color: #2196F3;
 }
 /*End Navbar*/
-
+.NewInvestmentButton{
+  margin: 10px auto;
+}
 /*Responsive Table*/
 .rwd-table {
   min-width: 300px;
