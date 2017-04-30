@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+  head
+    title="Benk.Capital"
+    meta(name="viewport" content="width=device-width" initial-scale="1.0")
+    link(rel="stylesheet" href="/public/css/main.css")
+    link(href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,600,700|Lato:300,400,500,700" rel="stylesheet")
+  body
+    div.container-full.justify-center
+      form(action="/login" method="post" class="signup-form flex-column")
+        span.FormDescription We just need a few details to get started!
+        div.FormGroup
+          input(type="text" name="email" placeholder="Email")
+        div.FormGroup
+          input(type="password" name="password" placeholder="Password")
+        span.FormError #{error}
+        div.FormGroup.flex-column.align-center
+          button(class="Button Button-Primary" type="submit") Log in
+          a(href="/signup" class="Link") Or, Sign Up
