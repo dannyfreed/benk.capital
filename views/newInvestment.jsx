@@ -11,10 +11,10 @@ class NewInvestment extends React.Component {
     return(
       <Layout title="Investments">
         <div className="container-full justify-center">
-          <form action="/newInvestment" method="post">
+          <form className="Form-NewInvestment" action="/newInvestment" method="post">
             <span className="FormDescription">Please enter a few details about the investment</span>
             <div className="FormGroup">
-              <select name="clientEmail">
+              <select required name="clientEmail">
                 <option value="" disabled selected>Choose a client</option>
                 {clientDropdownNodes}
               </select>

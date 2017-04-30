@@ -7,6 +7,14 @@
 .cell {
   flex: auto;
 }
+html{
+  width: 100%;
+}
+* {
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box;
+}
 body{
   margin:0;
   font-family: 'Raleway', sans-serif;
@@ -163,4 +171,44 @@ a:hover{
 }
 th, td{
   border-bottom: 1px solid #ededed;
+}
+
+.signup-form, .Form-NewInvestment {
+  width: 100%;
+  max-width: 375px;
+  padding: 50px 20px;
+  margin:0 auto;
+}
+
+.FormGroup input, .FormGroup select {
+  width: 100%;
+  margin: 0;
+  padding: 15px 10px;
+  border: 1px solid #ededed;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 300;
+  background:#fff;
+}
+
+.FormGroup {
+    display: flex;
+    margin: 10px 0px;
+}
+.FormDescription{
+  font-size: 20px;
+  text-align: center;
+  margin: 20px 0;
+}
+.FormError{
+  color:#D13336
+}
+.form-row{
+  margin:20px 0;
+}
+.flex-column .Button-Primary{
+  flex: 0 0 44px;
+  height: 44px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
