@@ -7,7 +7,14 @@ class Investments extends React.Component {
     const investmentNodes = this.props.investments.map((investment, index) => {
       return(
         <tr>
-          <td data-th="Client">{investment.email}</td>
+          <td data-th="Client">
+            {
+              this.props.isAdmin ?
+              <a href={`/investments/${investment.userId}`}>{investment.fullName}</a>
+              :
+              <span>{investment.fullName}</span>
+            }
+          </td>
           <td data-th="USD Investment">${investment.usdInvestment}</td>
           <td data-th="Cryptocurrency">{investment.cryptoType}</td>
           <td data-th="Number of coins purchased">{investment.cryptoAmount}</td>

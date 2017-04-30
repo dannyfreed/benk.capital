@@ -23,6 +23,7 @@
     "jade": "^1.11.0",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
+    "mongodb": "^2.2.26",
     "mongoose": "^4.9.6",
     "mongoose-timestamp": "^0.6.0",
     "react": "^15.5.4",
