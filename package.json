@@ -4,7 +4,8 @@
   "description": "Client portal for benk.capital",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_PATH=$NODE_PATH:./lib node index.js"
   },
   "author": "Danny Freed",
   "license": "ISC",
