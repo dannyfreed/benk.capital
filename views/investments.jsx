@@ -21,7 +21,7 @@ class Investments extends React.Component {
           <td data-th="Cryptocurrency">{investment.cryptoType}</td>
           <td data-th="Number of coins purchased">{investment.cryptoAmount}</td>
           <td data-th="Purchase price">${investment.cryptoPrice}</td>
-          <td className={tickerColor} data-th="Current price">${investment.currentPrice} (%{parseFloat((investment.currentPrice - investment.cryptoPrice) / investment.cryptoPrice).toFixed(2)})</td>
+          <td className={tickerColor} data-th="Current price">${investment.currentPrice} ({parseFloat(((investment.currentPrice - investment.cryptoPrice) / investment.cryptoPrice)*100).toFixed(2)}%)</td>
         </tr>
       )
     })
