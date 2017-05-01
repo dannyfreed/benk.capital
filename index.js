@@ -89,9 +89,6 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 app.get('/investments/:id', isAuthenticated, function(req, res){
-  console.log(req.params.id, '!!');
-
-
   var investmentsWithNames = []
   var totalPortfolioValue = 0
   var totalInvestment = 0
@@ -144,7 +141,6 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
           investmentWithName.cryptoType = userInvestments[i].cryptoType
           investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
           investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
-          console.log(investmentWithName, '!');
           investmentsWithNames.push(investmentWithName)
 
           if (userInvestments[i].cryptoType === 'LTC') {
@@ -239,7 +235,6 @@ app.get('/investments', isAuthenticated, function(req, res) {
               investmentWithName.cryptoType = userInvestments[i].cryptoType
               investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
               investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
-              console.log(investmentWithName, '!');
               investmentsWithNames.push(investmentWithName)
 
               if (userInvestments[i].cryptoType === 'LTC') {
@@ -277,7 +272,7 @@ app.get('/investments', isAuthenticated, function(req, res) {
       })
   })
 })
-app.get('/investments/new', isAuthenticated, function(req, res) {
+app.get('/investment/new', isAuthenticated, function(req, res) {
   var userEmailsAndNames = []
   userModel.User.find({}, function(err, users){
     //pass through user names + emails for dropdown (dropdown = client name, but value = email)

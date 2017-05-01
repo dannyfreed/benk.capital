@@ -25,7 +25,7 @@ class Investments extends React.Component {
 
     return(
       <Layout title="Investments">
-        <a href="/investments/new" className="NewInvestmentButton Button Button-Primary">Add New Investment</a>
+        <a href="/investment/new" className="NewInvestmentButton Button Button-Primary">Add New Investment</a>
         <table className="rwd-table">
           <thead>
             <tr>
