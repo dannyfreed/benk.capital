@@ -70,6 +70,12 @@ a:hover{
 .Button-Primary:hover{
   background: #4861dc;
 }
+.green{
+  color: green;
+}
+.red {
+  color:red;
+}
 
 /*Navbar*/
 .Navbar {

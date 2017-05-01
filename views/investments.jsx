@@ -1,10 +1,12 @@
 var React = require('react')
 var Layout = require('./layout')
 var moment = require('moment')
+var cx = require('classnames')
 
 class Investments extends React.Component {
   render() {
     const investmentNodes = this.props.investments.map((investment, index) => {
+      let tickerColor = cx(investment.currentPrice >= investment.cryptoPrice ? 'green' : 'red')
       return(
         <tr>
           <td data-th="Client">
@@ -19,13 +21,17 @@ class Investments extends React.Component {
           <td data-th="Cryptocurrency">{investment.cryptoType}</td>
           <td data-th="Number of coins purchased">{investment.cryptoAmount}</td>
           <td data-th="Purchase price">${investment.cryptoPrice}</td>
+          <td className={tickerColor} data-th="Current price">${investment.currentPrice} (%{parseFloat((investment.currentPrice - investment.cryptoPrice) / investment.cryptoPrice).toFixed(2)})</td>
         </tr>
       )
     })
 
     return(
       <Layout title="Investments">
-        <a href="/investment/new" className="NewInvestmentButton Button Button-Primary">Add New Investment</a>
+        {
+          this.props.isAdmin &&
+          <a href="/investment/new" className="NewInvestmentButton Button Button-Primary">Add New Investment</a>
+        }
         <table className="rwd-table">
           <thead>
             <tr>
@@ -34,6 +40,7 @@ class Investments extends React.Component {
               <th>Cryptocurrency</th>
               <th>Number of coins purchased</th>
               <th>Purchase price</th>
+              <th>Current price</th>
             </tr>
           </thead>
           <tbody>
