@@ -297,7 +297,7 @@ app.post("/signup", (req, res) => {
   var password = req.body.password
   var password_confirmation = req.body.password_confirmation
   createUser(userId, firstName, lastName, email, password, password_confirmation, function(err, user){
-    if (err) { res.render('signup', { error: err }) }
+    if (err) { res.render('signup.jade', { error: err }) }
     else {
       req.session.email = user.email;
       res.redirect('/investments');
@@ -310,7 +310,8 @@ app.post("/login", (req, res) => {
 
   authenticateUser(email, password, function(err, user){
     if (err) {
-      res.render('login', {error: err});
+      console.log('Incorrect email/password');
+      res.render('login.jade', {error: "Incorrect email/password"});
     }
     else{
       req.session.email = user.email;
