@@ -141,7 +141,6 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
           investmentWithName.cryptoType = userInvestments[i].cryptoType
           investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
           investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
-          investmentsWithNames.push(investmentWithName)
 
           if (userInvestments[i].cryptoType === 'LTC') {
             price = prices.USDT_LTC.last
@@ -156,6 +155,10 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
             var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
             var price = etherprice * prices.ETH_GNT.last
           }
+          
+          investmentWithName.currentPrice = parseFloat(price).toFixed(2)
+          investmentsWithNames.push(investmentWithName)
+
           totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
           totalInvestment = totalInvestment + userInvestments[i].usdInvestment
           cursor.resume()
