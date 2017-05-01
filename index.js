@@ -64,7 +64,12 @@ app.use(cors())
 
 //For avoidong Heroku $PORT error
 app.get('/', function(req, res) {
-  res.render('index.jade');
+  if (req.session.email) {
+    res.redirect('/investments')
+  }
+  else{
+    res.render('index.jade');
+  }
 }).listen(app.get('port'), function() {
   console.log('App is running, server is listening on port ', app.get('port'));
 });
@@ -155,7 +160,7 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
             var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
             var price = etherprice * prices.ETH_GNT.last
           }
-          
+
           investmentWithName.currentPrice = parseFloat(price).toFixed(2)
           investmentsWithNames.push(investmentWithName)
 
