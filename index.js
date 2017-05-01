@@ -223,36 +223,44 @@ app.get('/investments', isAuthenticated, function(req, res) {
         cursor.on('data', function(user) {
           cursor.pause()
           request.get('https://poloniex.com/public?command=returnTicker', function(err, response, body){
-            var price;
-            var prices = JSON.parse(body)
-            var userInvestments = user.userInvestments
-            for(var i in userInvestments) {
-              var investmentWithName = {}
-              investmentWithName.userId = user.userId
-              investmentWithName.email = userInvestments[i].email
-              investmentWithName.fullName = user.firstName.charAt(0) + '. ' + user.lastName
-              investmentWithName.usdInvestment = userInvestments[i].usdInvestment
-              investmentWithName.cryptoType = userInvestments[i].cryptoType
-              investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
-              investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
-              investmentsWithNames.push(investmentWithName)
+            if (err) {
+              console.error(err)
+            }
+            else {
+              var price;
+              var prices = JSON.parse(body)
+              var userInvestments = user.userInvestments
+              if (userInvestments.length === 0) {
+                cursor.resume()
+              }
+              for(var i in userInvestments) {
+                var investmentWithName = {}
+                investmentWithName.userId = user.userId
+                investmentWithName.email = userInvestments[i].email
+                investmentWithName.fullName = user.firstName.charAt(0) + '. ' + user.lastName
+                investmentWithName.usdInvestment = userInvestments[i].usdInvestment
+                investmentWithName.cryptoType = userInvestments[i].cryptoType
+                investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
+                investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
+                investmentsWithNames.push(investmentWithName)
 
-              if (userInvestments[i].cryptoType === 'LTC') {
-                price = prices.USDT_LTC.last
+                if (userInvestments[i].cryptoType === 'LTC') {
+                  price = prices.USDT_LTC.last
+                }
+                else if (userInvestments[i].cryptoType === 'ETH') {
+                  price = prices.USDT_ETH.last
+                }
+                else if (userInvestments[i].cryptoType === 'ETC') {
+                  price = prices.USDT_ETC.last
+                }
+                else if (userInvestments[i].cryptoType === 'GNT') {
+                  var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
+                  var price = etherprice * prices.ETH_GNT.last
+                }
+                totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
+                totalInvestment = totalInvestment + userInvestments[i].usdInvestment
+                cursor.resume()
               }
-              else if (userInvestments[i].cryptoType === 'ETH') {
-                price = prices.USDT_ETH.last
-              }
-              else if (userInvestments[i].cryptoType === 'ETC') {
-                price = prices.USDT_ETC.last
-              }
-              else if (userInvestments[i].cryptoType === 'GNT') {
-                var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
-                var price = etherprice * prices.ETH_GNT.last
-              }
-              totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
-              totalInvestment = totalInvestment + userInvestments[i].usdInvestment
-              cursor.resume()
             }
           })
         })
