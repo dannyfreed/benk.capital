@@ -229,6 +229,7 @@ app.get('/investments', isAuthenticated, function(req, res) {
           }
         ]);
         cursor.on('data', function(user) {
+          console.log(user);
           cursor.pause()
           request.get('https://poloniex.com/public?command=returnTicker', function(err, response, body){
             if (err) {
