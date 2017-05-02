@@ -243,7 +243,6 @@ app.get('/investments', isAuthenticated, function(req, res) {
                 cursor.resume()
               }
               for(var i in userInvestments) {
-                console.log(user.email);
                 var investmentWithName = {}
                 investmentWithName.userId = user.userId
                 investmentWithName.email = userInvestments[i].email
@@ -272,9 +271,8 @@ app.get('/investments', isAuthenticated, function(req, res) {
 
                 investmentWithName.currentPrice = parseFloat(price).toFixed(2)
                 investmentsWithNames.push(investmentWithName)
-                console.log('!!!!');
                 console.log(investmentWithName);
-                console.log('!!!!');
+                console.log('-----------------');
                 totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
                 totalInvestment = totalInvestment + userInvestments[i].usdInvestment
                 cursor.resume()
