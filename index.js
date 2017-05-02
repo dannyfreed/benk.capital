@@ -229,7 +229,6 @@ app.get('/investments', isAuthenticated, function(req, res) {
           }
         ]);
         cursor.on('data', function(user) {
-          console.log(user);
           cursor.pause()
           request.get('https://poloniex.com/public?command=returnTicker', function(err, response, body){
             if (err) {
@@ -240,6 +239,7 @@ app.get('/investments', isAuthenticated, function(req, res) {
               var prices = JSON.parse(body)
               var userInvestments = user.userInvestments
               if (userInvestments.length === 0) {
+                console.log('userInvestments.length == 0');
                 cursor.resume()
               }
               for(var i in userInvestments) {

@@ -5,6 +5,7 @@ var cx = require('classnames')
 
 class Investments extends React.Component {
   render() {
+    console.log(this.props.investments);
     const investmentNodes = this.props.investments.map((investment, index) => {
       let tickerColor = cx(investment.currentPrice >= investment.cryptoPrice ? 'green' : 'red')
       return(
