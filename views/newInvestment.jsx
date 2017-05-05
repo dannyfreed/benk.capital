@@ -20,6 +20,9 @@ class NewInvestment extends React.Component {
               </select>
             </div>
             <div className="FormGroup">
+              <input type="date" required name="investmentDate" placeholder="Date of investment" />
+            </div>
+            <div className="FormGroup">
               <input type="text" required name="usdInvestment" placeholder="Investment amount in US Dollars" />
             </div>
             <div className="FormGroup">

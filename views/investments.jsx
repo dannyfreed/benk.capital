@@ -8,7 +8,7 @@ class Investments extends React.Component {
     const investmentNodes = this.props.investments.map((investment, index) => {
       let tickerColor = cx(investment.currentPrice >= investment.cryptoPrice ? 'green' : 'red')
       return(
-        <tr>
+        <tr key={index}>
           <td data-th="Client">
             {
               this.props.isAdmin ?
@@ -17,6 +17,7 @@ class Investments extends React.Component {
               <span>{investment.fullName}</span>
             }
           </td>
+          <td data-th="Date">{moment(investment.date).format('M/D')}</td>
           <td data-th="USD Investment">${investment.usdInvestment}</td>
           <td data-th="Cryptocurrency">{investment.cryptoType}</td>
           <td data-th="Number of coins purchased">{investment.cryptoAmount}</td>
@@ -36,6 +37,7 @@ class Investments extends React.Component {
           <thead>
             <tr>
               <th>Client</th>
+              <th>Date</th>
               <th>USD Investment</th>
               <th>Cryptocurrency</th>
               <th>Number of coins purchased</th>

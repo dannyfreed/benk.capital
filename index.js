@@ -189,119 +189,22 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
   })
 })
 app.get('/investments', isAuthenticated, function(req, res) {
-
   userModel.User.findOne({email: req.session.email}, function(err, user){
     if (err) { console.error(err) }
     var investmentQuery = {}
     if (!user.isAdmin) {
       investmentQuery = {email: user.email};
     }
-    var investmentsWithNames = []
-    var totalPortfolioValue = 0
-    var totalInvestment = 0
-
-    MongoClient.connect(URL, {
-        connectTimeoutMS: 60000,
-        socketTimeoutMS: 60000
-      }, function(err, db) {
-        if (err) {
-          console.error('connect error:', err);
-        }
-        var col = db.collection('users');
-        var cursor = col.aggregate([
-          {
-            $match : investmentQuery
-          },
-          {
-            $lookup: {
-                from: "investments",
-                localField: "email",
-                foreignField: "email",
-                as: "userInvestments"
-              }
-          },
-          {
-            $project:{
-              userId: 1,
-              firstName: 1,
-              lastName: 1,
-              email: 1,
-              isAdmin: 1,
-              userInvestments: 1
-            }
-          }
-        ]);
-        cursor.on('data', function(user) {
-          cursor.pause()
-          request.get('https://poloniex.com/public?command=returnTicker', function(err, response, body){
-            if (err) {
-              console.error(err)
-            }
-            else {
-              var price;
-              var prices = JSON.parse(body)
-              var userInvestments = user.userInvestments
-              if (userInvestments.length === 0) {
-                console.log('userInvestments.length == 0');
-                cursor.resume()
-              }
-              else{
-                for(var i in userInvestments) {
-                  var investmentWithName = {}
-                  investmentWithName.userId = user.userId
-                  investmentWithName.email = userInvestments[i].email
-                  investmentWithName.fullName = user.firstName.charAt(0) + '. ' + user.lastName
-                  investmentWithName.usdInvestment = userInvestments[i].usdInvestment
-                  investmentWithName.cryptoType = userInvestments[i].cryptoType
-                  investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
-                  investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
-
-                  if (userInvestments[i].cryptoType === 'LTC') {
-                    price = prices.USDT_LTC.last
-                  }
-                  else if (userInvestments[i].cryptoType === 'ETH') {
-                    price = prices.USDT_ETH.last
-                  }
-                  else if (userInvestments[i].cryptoType === 'ETC') {
-                    price = prices.USDT_ETC.last
-                  }
-                  else if (userInvestments[i].cryptoType === 'GNT') {
-                    var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
-                    price = etherprice * prices.ETH_GNT.last
-                  }
-                  else if (userInvestments[i].cryptoType === 'XRP') {
-                    price = prices.USDT_XRP.last
-                  }
-                  else {
-                    console.log('Currency needs to be added: ', userInvestments[i].cryptoType);
-                  }
-
-                  investmentWithName.currentPrice = parseFloat(price).toFixed(2)
-                  investmentsWithNames.push(investmentWithName)
-                  console.log(investmentWithName);
-                  console.log('-----------------');
-                  totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
-                  totalInvestment = totalInvestment + userInvestments[i].usdInvestment
-                  cursor.resume()
-                }
-              }
-            }
-          })
-        })
-        cursor.on('error', function(err){
-          console.error(err);
-        })
-        cursor.once('end', function() {
-          var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
-          res.render('investments', {
-            isAdmin: user.isAdmin,
-            investments: investmentsWithNames,
-            totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
-            usdInvestment: (Math.round(totalInvestment * 100) / 100),
-            roi: roi
-          })
-        })
+    getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
+      var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
+      res.render('investments', {
+        isAdmin: user.isAdmin,
+        investments: investments,
+        totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
+        usdInvestment: (Math.round(totalInvestment * 100) / 100),
+        roi: roi
       })
+    })
   })
 })
 app.get('/investment/new', isAuthenticated, function(req, res) {
@@ -353,6 +256,7 @@ app.post("/login", (req, res) => {
 });
 app.post('/newInvestment', (req, res) => {
   var clientEmail = req.body.clientEmail
+  var investmentDate = req.body.investmentDate
   var usdInvestment = req.body.usdInvestment
   var cryptoType = req.body.cryptoType
   var cryptoAmount = req.body.cryptoAmount
@@ -365,10 +269,12 @@ app.post('/newInvestment', (req, res) => {
     else {
       investmentModel.Investment.create({
         email: clientEmail,
+        date: investmentDate,
         usdInvestment: usdInvestment,
         cryptoType: cryptoType,
         cryptoAmount: cryptoAmount,
-        cryptoPrice: cryptoPrice
+        cryptoPrice: cryptoPrice,
+        user: user
       }, function(err){
         if(err){
           console.error(err);
@@ -457,5 +363,79 @@ function getFullNameByEmail(email, callback){
     if (err) { console.error(err) }
     var fullName = user.firstName + ' ' + user.lastName
     callback(fullName)
+  })
+}
+
+function getInvestments(investmentQuery, cb) {
+  var investmentsWithNames = []
+  var totalPortfolioValue = 0
+  var totalInvestment = 0
+  getCoinPrices(function(coinPrices){
+    investmentModel.Investment.find(investmentQuery, function(err, investments) {
+      for (var i = 0; i < investments.length; i++) {
+        var investmentWithName = {}
+        var currentCointPrice = _.find(coinPrices, { 'coin': investments[i].cryptoType}).price
+
+        investmentWithName.userId = investments[i].user.userId
+        investmentWithName.email = investments[i].email
+        investmentWithName.date = investments[i].date
+        investmentWithName.fullName = investments[i].user.firstName.charAt(0) + '. ' + investments[i].user.lastName
+        investmentWithName.usdInvestment = investments[i].usdInvestment
+        investmentWithName.cryptoType = investments[i].cryptoType
+        investmentWithName.cryptoAmount = investments[i].cryptoAmount
+        investmentWithName.cryptoPrice = investments[i].cryptoPrice
+        investmentWithName.currentPrice = parseFloat(currentCointPrice).toFixed(2)
+        investmentsWithNames.push(investmentWithName)
+
+        totalPortfolioValue = totalPortfolioValue + (currentCointPrice * investments[i].cryptoAmount)
+        totalInvestment = totalInvestment + investments[i].usdInvestment
+      }
+      cb(investmentsWithNames, totalPortfolioValue, totalInvestment)
+    })
+  })
+
+}
+function calculatePortfolioSummary(userId) {
+  totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
+  totalInvestment = totalInvestment + userInvestments[i].usdInvestment
+}
+function getCoinPrices(cb) {
+  request.get('https://poloniex.com/public?command=returnTicker', function(err, response, body){
+    if (err) {
+      console.error(err)
+    }
+    else {
+      var price;
+      var prices = JSON.parse(body)
+
+      var bitcoinPrice = prices.USDT_BTC.last
+      var litecoinPrice = prices.USDT_LTC.last
+      var ethereumPrice = prices.USDT_ETH.last
+      var ethereumClassicPrice = prices.USDT_ETC.last
+      var golemPrice = ethereumPrice * prices.ETH_GNT.last
+      var ripplePrice = prices.USDT_XRP.last
+
+      var coinPrices = [
+        { coin: 'BTC',
+          price: bitcoinPrice
+        },
+        { coin: 'LTC',
+          price: litecoinPrice
+        },
+        { coin: 'ETH',
+          price: ethereumPrice
+        },
+        { coin: 'ETC',
+          price: ethereumClassicPrice
+        },
+        { coin: 'GNT',
+          price: golemPrice
+        },
+        { coin: 'XRP',
+          price: ripplePrice
+        }
+      ]
+      cb(coinPrices)
+    }
   })
 }
