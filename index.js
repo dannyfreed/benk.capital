@@ -242,40 +242,45 @@ app.get('/investments', isAuthenticated, function(req, res) {
                 console.log('userInvestments.length == 0');
                 cursor.resume()
               }
-              for(var i in userInvestments) {
-                var investmentWithName = {}
-                investmentWithName.userId = user.userId
-                investmentWithName.email = userInvestments[i].email
-                investmentWithName.fullName = user.firstName.charAt(0) + '. ' + user.lastName
-                investmentWithName.usdInvestment = userInvestments[i].usdInvestment
-                investmentWithName.cryptoType = userInvestments[i].cryptoType
-                investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
-                investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
+              else{
+                for(var i in userInvestments) {
+                  var investmentWithName = {}
+                  investmentWithName.userId = user.userId
+                  investmentWithName.email = userInvestments[i].email
+                  investmentWithName.fullName = user.firstName.charAt(0) + '. ' + user.lastName
+                  investmentWithName.usdInvestment = userInvestments[i].usdInvestment
+                  investmentWithName.cryptoType = userInvestments[i].cryptoType
+                  investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
+                  investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
 
-                if (userInvestments[i].cryptoType === 'LTC') {
-                  price = prices.USDT_LTC.last
-                }
-                else if (userInvestments[i].cryptoType === 'ETH') {
-                  price = prices.USDT_ETH.last
-                }
-                else if (userInvestments[i].cryptoType === 'ETC') {
-                  price = prices.USDT_ETC.last
-                }
-                else if (userInvestments[i].cryptoType === 'GNT') {
-                  var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
-                  var price = etherprice * prices.ETH_GNT.last
-                }
-                else {
-                  console.log('Currency needs to be added: ', userInvestments[i].cryptoType);
-                }
+                  if (userInvestments[i].cryptoType === 'LTC') {
+                    price = prices.USDT_LTC.last
+                  }
+                  else if (userInvestments[i].cryptoType === 'ETH') {
+                    price = prices.USDT_ETH.last
+                  }
+                  else if (userInvestments[i].cryptoType === 'ETC') {
+                    price = prices.USDT_ETC.last
+                  }
+                  else if (userInvestments[i].cryptoType === 'GNT') {
+                    var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
+                    price = etherprice * prices.ETH_GNT.last
+                  }
+                  else if (userInvestments[i].cryptoType === 'XRP') {
+                    price = prices.USDT_XRP.last
+                  }
+                  else {
+                    console.log('Currency needs to be added: ', userInvestments[i].cryptoType);
+                  }
 
-                investmentWithName.currentPrice = parseFloat(price).toFixed(2)
-                investmentsWithNames.push(investmentWithName)
-                console.log(investmentWithName);
-                console.log('-----------------');
-                totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
-                totalInvestment = totalInvestment + userInvestments[i].usdInvestment
-                cursor.resume()
+                  investmentWithName.currentPrice = parseFloat(price).toFixed(2)
+                  investmentsWithNames.push(investmentWithName)
+                  console.log(investmentWithName);
+                  console.log('-----------------');
+                  totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
+                  totalInvestment = totalInvestment + userInvestments[i].usdInvestment
+                  cursor.resume()
+                }
               }
             }
           })
