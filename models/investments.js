@@ -7,10 +7,12 @@ module.exports = function(mongoose) {
 
   var schema = new Schema({
     email: { type: String },
+    date: { type: String },
     usdInvestment: { type: Number },
     cryptoType: { type: String },
     cryptoAmount: {type: Number },
-    cryptoPrice: {type: Number }
+    cryptoPrice: {type: Number },
+    user: { type: Object }
   });
 
   schema.plugin(supergoose);
