@@ -158,7 +158,10 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
           }
           else if (userInvestments[i].cryptoType === 'GNT') {
             var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
-            var price = etherprice * prices.ETH_GNT.last
+            price = etherprice * prices.ETH_GNT.last
+          }
+          else if (userInvestments[i].cryptoType === 'XRP') {
+            price = prices.USDT_XRP.last
           }
 
           investmentWithName.currentPrice = parseFloat(price).toFixed(2)
