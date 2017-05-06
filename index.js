@@ -94,93 +94,14 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 app.get('/investments/:id', isAuthenticated, function(req, res){
-  var investmentsWithNames = []
-  var totalPortfolioValue = 0
-  var totalInvestment = 0
-
-  MongoClient.connect(URL, {
-    connectTimeoutMS: 60000,
-    socketTimeoutMS: 60000
-  }, function(err, db) {
-    if (err) {
-      console.error('connect error:', err);
-    }
-    var col = db.collection('users');
-    var cursor = col.aggregate([
-      {
-        $match : {
-          userId: req.params.id
-        }
-      },
-      {
-        $lookup: {
-          from: "investments",
-          localField: "email",
-          foreignField: "email",
-          as: "userInvestments"
-        }
-      },
-      {
-        $project:{
-          userId: 1,
-          firstName: 1,
-          lastName: 1,
-          email: 1,
-          isAdmin: 1,
-          userInvestments: 1
-        }
-      }
-    ]);
-    cursor.on('data', function(user) {
-      cursor.pause()
-      request.get('https://poloniex.com/public?command=returnTicker', function(err, response, body){
-        var price;
-        var prices = JSON.parse(body)
-        var userInvestments = user.userInvestments
-        for(var i in userInvestments) {
-          var investmentWithName = {}
-          investmentWithName.userId = user.userId
-          investmentWithName.email = userInvestments[i].email
-          investmentWithName.fullName = user.firstName.charAt(0) + '. ' + user.lastName
-          investmentWithName.usdInvestment = userInvestments[i].usdInvestment
-          investmentWithName.cryptoType = userInvestments[i].cryptoType
-          investmentWithName.cryptoAmount = userInvestments[i].cryptoAmount
-          investmentWithName.cryptoPrice = userInvestments[i].cryptoPrice
-
-          if (userInvestments[i].cryptoType === 'LTC') {
-            price = prices.USDT_LTC.last
-          }
-          else if (userInvestments[i].cryptoType === 'ETH') {
-            price = prices.USDT_ETH.last
-          }
-          else if (userInvestments[i].cryptoType === 'ETC') {
-            price = prices.USDT_ETC.last
-          }
-          else if (userInvestments[i].cryptoType === 'GNT') {
-            var etherprice = prices.USDT_ETH.last //no direct USD to GNT conversion
-            price = etherprice * prices.ETH_GNT.last
-          }
-          else if (userInvestments[i].cryptoType === 'XRP') {
-            price = prices.USDT_XRP.last
-          }
-
-          investmentWithName.currentPrice = parseFloat(price).toFixed(2)
-          investmentsWithNames.push(investmentWithName)
-
-          totalPortfolioValue = totalPortfolioValue + (price * userInvestments[i].cryptoAmount)
-          totalInvestment = totalInvestment + userInvestments[i].usdInvestment
-          cursor.resume()
-        }
-      })
-    })
-    cursor.on('error', function(err){
-      console.error(err);
-    })
-    cursor.once('end', function() {
+  userModel.User.findOne({userId: req.params.id}, function(err, user){
+    if (err) { console.error(err) }
+    var investmentQuery = {email: user.email};
+    getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
       var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
       res.render('investments', {
         isAdmin: false,
-        investments: investmentsWithNames,
+        investments: investments,
         totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
         usdInvestment: (Math.round(totalInvestment * 100) / 100),
         roi: roi
@@ -390,6 +311,7 @@ function getInvestments(investmentQuery, cb) {
         totalPortfolioValue = totalPortfolioValue + (currentCointPrice * investments[i].cryptoAmount)
         totalInvestment = totalInvestment + investments[i].usdInvestment
       }
+      investmentsWithNames = _.sortBy(investmentsWithNames, ['date']);
       cb(investmentsWithNames, totalPortfolioValue, totalInvestment)
     })
   })
