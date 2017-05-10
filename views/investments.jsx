@@ -27,6 +27,16 @@ class Investments extends React.Component {
       )
     })
 
+    const coinSummary = this.props.coinSummary.map((coinSumm, index) => {
+      return(
+      <tr key={index}>
+          <td data-th="Cryptocurrency">{coinSumm.CURRENCY}</td>
+          <td data-th="Amount">{coinSumm.AMOUNT}</td>
+        </tr>
+      )
+    })
+
+
     return(
       <Layout title="Investments">
         {
@@ -66,6 +76,17 @@ class Investments extends React.Component {
             <span>{this.props.roi}%</span>
           </div>
         </div>
+        <table className="rwd-table">
+          <thead>
+            <tr>
+              <th>Crypto</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {coinSummary}
+          </tbody>
+        </table>
       </Layout>
     )
   }

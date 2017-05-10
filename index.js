@@ -24,7 +24,7 @@ const investmentModel = require('./models/investments.js')(mongoose);
 var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };
 // Mongo parameters
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = "mongodb://127.0.0.1:27017";//process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   throw new Error('missing MONGODB_URI');
 }
@@ -117,13 +117,16 @@ app.get('/investments', isAuthenticated, function(req, res) {
       investmentQuery = {email: user.email};
     }
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
+      getCoinSummary(investments, function(coinSummary){
       var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
       res.render('investments', {
         isAdmin: user.isAdmin,
         investments: investments,
         totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
         usdInvestment: (Math.round(totalInvestment * 100) / 100),
-        roi: roi
+        roi: roi,
+        coinSummary:coinSummary
+      })
       })
     })
   })
@@ -285,6 +288,22 @@ function getFullNameByEmail(email, callback){
     var fullName = user.firstName + ' ' + user.lastName
     callback(fullName)
   })
+}
+
+function getCoinSummary(investments, cb){
+  var holder = {};
+  investments.forEach(function (d) {
+    if(holder.hasOwnProperty(d.cryptoType)) {
+       holder[d.cryptoType] = holder[d.cryptoType] + d.cryptoAmount;
+    } else {
+       holder[d.cryptoType] = d.cryptoAmount;
+    }
+  });
+  var coinSummary = [];
+  for(var prop in holder) {
+    coinSummary.push({CURRENCY: prop, AMOUNT: holder[prop]});
+  }
+  cb(coinSummary);
 }
 
 function getInvestments(investmentQuery, cb) {
