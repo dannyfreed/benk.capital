@@ -24,7 +24,7 @@ const investmentModel = require('./models/investments.js')(mongoose);
 var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };
 // Mongo parameters
-const MONGODB_URI = "mongodb://127.0.0.1:27017";//process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   throw new Error('missing MONGODB_URI');
 }
@@ -98,13 +98,16 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
     if (err) { console.error(err) }
     var investmentQuery = {email: user.email};
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
-      var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
-      res.render('investments', {
-        isAdmin: false,
-        investments: investments,
-        totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
-        usdInvestment: (Math.round(totalInvestment * 100) / 100),
-        roi: roi
+      getCoinSummary(investments, function(coinSummary){
+        var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
+        res.render('investments', {
+          isAdmin: user.isAdmin,
+          investments: investments,
+          totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
+          usdInvestment: (Math.round(totalInvestment * 100) / 100),
+          roi: roi,
+          coinSummary: coinSummary
+        })
       })
     })
   })
@@ -118,15 +121,15 @@ app.get('/investments', isAuthenticated, function(req, res) {
     }
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
       getCoinSummary(investments, function(coinSummary){
-      var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
-      res.render('investments', {
-        isAdmin: user.isAdmin,
-        investments: investments,
-        totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
-        usdInvestment: (Math.round(totalInvestment * 100) / 100),
-        roi: roi,
-        coinSummary:coinSummary
-      })
+        var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
+        res.render('investments', {
+          isAdmin: user.isAdmin,
+          investments: investments,
+          totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
+          usdInvestment: (Math.round(totalInvestment * 100) / 100),
+          roi: roi,
+          coinSummary: coinSummary
+        })
       })
     })
   })

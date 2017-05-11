@@ -18,23 +18,26 @@ class Investments extends React.Component {
             }
           </td>
           <td data-th="Date">{moment(investment.date).format('M/D')}</td>
-          <td data-th="USD Investment">${investment.usdInvestment}</td>
+          <td style={{textAlign: 'right'}} data-th="USD Investment">${investment.usdInvestment}</td>
           <td data-th="Cryptocurrency">{investment.cryptoType}</td>
-          <td data-th="Number of coins purchased">{investment.cryptoAmount}</td>
-          <td data-th="Purchase price">${investment.cryptoPrice}</td>
-          <td className={tickerColor} data-th="Current price">${investment.currentPrice} ({parseFloat(((investment.currentPrice - investment.cryptoPrice) / investment.cryptoPrice)*100).toFixed(2)}%)</td>
+          <td style={{textAlign: 'right'}} data-th="Number of coins purchased">{investment.cryptoAmount}</td>
+          <td style={{textAlign: 'right'}} data-th="Purchase price">${investment.cryptoPrice}</td>
+          <td style={{textAlign: 'right'}} className={tickerColor} data-th="Current price">${investment.currentPrice} ({parseFloat(((investment.currentPrice - investment.cryptoPrice) / investment.cryptoPrice)*100).toFixed(2)}%)</td>
         </tr>
       )
     })
 
-    const coinSummary = this.props.coinSummary.map((coinSumm, index) => {
-      return(
-      <tr key={index}>
-          <td data-th="Cryptocurrency">{coinSumm.CURRENCY}</td>
-          <td data-th="Amount">{coinSumm.AMOUNT}</td>
-        </tr>
-      )
-    })
+    var coinSummary
+    if (this.props.isAdmin) {
+      coinSummary = this.props.coinSummary.map((coinSumm, index) => {
+        return(
+        <tr key={index}>
+            <td data-th="Cryptocurrency">{coinSumm.CURRENCY}</td>
+            <td style={{textAlign: 'right'}} data-th="Number of Coins">{coinSumm.AMOUNT.toFixed(2)}</td>
+          </tr>
+        )
+      })
+    }
 
 
     return(
@@ -48,11 +51,11 @@ class Investments extends React.Component {
             <tr>
               <th>Client</th>
               <th>Date</th>
-              <th>USD Investment</th>
+              <th style={{textAlign: 'right'}}>USD Investment</th>
               <th>Cryptocurrency</th>
-              <th>Number of coins purchased</th>
-              <th>Purchase price</th>
-              <th>Current price</th>
+              <th style={{textAlign: 'right'}}>Number of coins purchased</th>
+              <th style={{textAlign: 'right'}}>Purchase price</th>
+              <th style={{textAlign: 'right'}}>Current price</th>
             </tr>
           </thead>
           <tbody>
@@ -76,17 +79,23 @@ class Investments extends React.Component {
             <span>{this.props.roi}%</span>
           </div>
         </div>
-        <table className="rwd-table">
-          <thead>
-            <tr>
-              <th>Crypto</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {coinSummary}
-          </tbody>
-        </table>
+        {
+          this.props.isAdmin ?
+          <table className="rwd-table">
+            <thead>
+              <tr>
+                <th>Crypto</th>
+                <th style={{textAlign: 'right'}}>Number of Coins</th>
+              </tr>
+            </thead>
+            <tbody>
+              {coinSummary}
+            </tbody>
+          </table>
+          :
+          null
+        }
+
       </Layout>
     )
   }
