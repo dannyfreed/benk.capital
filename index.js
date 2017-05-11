@@ -104,7 +104,7 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
         investments: investments,
         totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
         usdInvestment: (Math.round(totalInvestment * 100) / 100),
-        roi: roi,
+        roi: roi
       })
     })
   })
@@ -123,7 +123,7 @@ app.get('/investments', isAuthenticated, function(req, res) {
         investments: investments,
         totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
         usdInvestment: (Math.round(totalInvestment * 100) / 100),
-        roi: roi,
+        roi: roi
       })
     })
   })
