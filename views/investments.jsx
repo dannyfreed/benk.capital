@@ -27,19 +27,6 @@ class Investments extends React.Component {
       )
     })
 
-    var coinSummary
-    if (this.props.isAdmin) {
-      coinSummary = this.props.coinSummary.map((coinSumm, index) => {
-        return(
-        <tr key={index}>
-            <td data-th="Cryptocurrency">{coinSumm.CURRENCY}</td>
-            <td style={{textAlign: 'right'}} data-th="Number of Coins">{coinSumm.AMOUNT.toFixed(2)}</td>
-          </tr>
-        )
-      })
-    }
-
-
     return(
       <Layout title="Investments">
         {
@@ -53,7 +40,7 @@ class Investments extends React.Component {
               <th>Date</th>
               <th style={{textAlign: 'right'}}>USD Investment</th>
               <th>Cryptocurrency</th>
-              <th style={{textAlign: 'right'}}>Number of coins purchased</th>
+              <th style={{textAlign: 'right'}}># of coins purchased</th>
               <th style={{textAlign: 'right'}}>Purchase price</th>
               <th style={{textAlign: 'right'}}>Current price</th>
             </tr>
@@ -79,23 +66,6 @@ class Investments extends React.Component {
             <span>{this.props.roi}%</span>
           </div>
         </div>
-        {
-          this.props.isAdmin ?
-          <table className="rwd-table">
-            <thead>
-              <tr>
-                <th>Crypto</th>
-                <th style={{textAlign: 'right'}}>Number of Coins</th>
-              </tr>
-            </thead>
-            <tbody>
-              {coinSummary}
-            </tbody>
-          </table>
-          :
-          null
-        }
-
       </Layout>
     )
   }

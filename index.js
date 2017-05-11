@@ -98,16 +98,13 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
     if (err) { console.error(err) }
     var investmentQuery = {email: user.email};
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
-      getCoinSummary(investments, function(coinSummary){
-        var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
-        res.render('investments', {
-          isAdmin: user.isAdmin,
-          investments: investments,
-          totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
-          usdInvestment: (Math.round(totalInvestment * 100) / 100),
-          roi: roi,
-          coinSummary: coinSummary
-        })
+      var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
+      res.render('investments', {
+        isAdmin: user.isAdmin,
+        investments: investments,
+        totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
+        usdInvestment: (Math.round(totalInvestment * 100) / 100),
+        roi: roi,
       })
     })
   })
@@ -120,16 +117,13 @@ app.get('/investments', isAuthenticated, function(req, res) {
       investmentQuery = {email: user.email};
     }
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
-      getCoinSummary(investments, function(coinSummary){
-        var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
-        res.render('investments', {
-          isAdmin: user.isAdmin,
-          investments: investments,
-          totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
-          usdInvestment: (Math.round(totalInvestment * 100) / 100),
-          roi: roi,
-          coinSummary: coinSummary
-        })
+      var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
+      res.render('investments', {
+        isAdmin: user.isAdmin,
+        investments: investments,
+        totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
+        usdInvestment: (Math.round(totalInvestment * 100) / 100),
+        roi: roi,
       })
     })
   })
@@ -148,7 +142,16 @@ app.get('/investment/new', isAuthenticated, function(req, res) {
     res.render('newInvestment', {userEmailsAndNames: userEmailsAndNames})
   })
 })
-
+app.get('/summary', isAuthenticatedAndAdmin, function(req, res) {
+  var investmentQuery = {} //Only admins will have access to this route right now, so show all clients
+  getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
+    getCoinSummary(investments, function(coinSummary){
+      res.render('summary', {
+        coinSummary: coinSummary
+      })
+    })
+  })
+})
 
 
 app.post("/signup", (req, res) => {
@@ -260,6 +263,20 @@ function isAuthenticated(req, res, next) {
   if (req.session.email) { return next() }
   // IF A USER ISN'T LOGGED IN, THEN REDIRECT THEM TO SIGNUP
   res.redirect('/login');
+}
+function isAuthenticatedAndAdmin(req, res, next) {
+  if (! req.session.email) { res.redirect('/login') }
+  else {
+    userModel.User.findOne({email: req.session.email}, function(err, user){
+      if (err) { console.error(err) }
+      if (user.isAdmin) {
+        return next()
+      }
+      else {
+        res.sendStatus(400)
+      }
+    })
+  }
 }
 
 // This finds a user matching the username and password that were given.
