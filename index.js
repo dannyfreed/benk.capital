@@ -100,7 +100,7 @@ app.get('/investments/:id', isAuthenticated, function(req, res){
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
       var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
       res.render('investments', {
-        isAdmin: false,
+        isAdmin: user.isAdmin,
         investments: investments,
         totalPortfolioValue: (Math.round(totalPortfolioValue * 100) / 100),
         usdInvestment: (Math.round(totalInvestment * 100) / 100),
@@ -142,7 +142,16 @@ app.get('/investment/new', isAuthenticated, function(req, res) {
     res.render('newInvestment', {userEmailsAndNames: userEmailsAndNames})
   })
 })
-
+app.get('/summary', isAuthenticatedAndAdmin, function(req, res) {
+  var investmentQuery = {} //Only admins will have access to this route right now, so show all clients
+  getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
+    getCoinSummary(investments, function(coinSummary){
+      res.render('summary', {
+        coinSummary: coinSummary
+      })
+    })
+  })
+})
 
 
 app.post("/signup", (req, res) => {
@@ -255,6 +264,20 @@ function isAuthenticated(req, res, next) {
   // IF A USER ISN'T LOGGED IN, THEN REDIRECT THEM TO SIGNUP
   res.redirect('/login');
 }
+function isAuthenticatedAndAdmin(req, res, next) {
+  if (! req.session.email) { res.redirect('/login') }
+  else {
+    userModel.User.findOne({email: req.session.email}, function(err, user){
+      if (err) { console.error(err) }
+      if (user.isAdmin) {
+        return next()
+      }
+      else {
+        res.sendStatus(400)
+      }
+    })
+  }
+}
 
 // This finds a user matching the username and password that were given.
 function authenticateUser(email, password, callback){
@@ -285,6 +308,22 @@ function getFullNameByEmail(email, callback){
     var fullName = user.firstName + ' ' + user.lastName
     callback(fullName)
   })
+}
+
+function getCoinSummary(investments, cb){
+  var holder = {};
+  investments.forEach(function (d) {
+    if(holder.hasOwnProperty(d.cryptoType)) {
+       holder[d.cryptoType] = holder[d.cryptoType] + d.cryptoAmount;
+    } else {
+       holder[d.cryptoType] = d.cryptoAmount;
+    }
+  });
+  var coinSummary = [];
+  for(var prop in holder) {
+    coinSummary.push({CURRENCY: prop, AMOUNT: holder[prop]});
+  }
+  cb(coinSummary);
 }
 
 function getInvestments(investmentQuery, cb) {

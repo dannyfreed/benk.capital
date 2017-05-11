@@ -172,6 +172,12 @@ a:hover{
     padding: 1em !important;
   }
 }
+
+@media (max-width: 480px) {
+  td, th {
+    text-align: left !important;
+  }
+}
 .rwd-table th, .rwd-table td:before {
 
 }

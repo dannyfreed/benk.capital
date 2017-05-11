@@ -18,17 +18,17 @@ class Investments extends React.Component {
             }
           </td>
           <td data-th="Date">{moment(investment.date).format('M/D')}</td>
-          <td data-th="USD Investment">${investment.usdInvestment}</td>
+          <td style={{textAlign: 'right'}} data-th="USD Investment">${investment.usdInvestment}</td>
           <td data-th="Cryptocurrency">{investment.cryptoType}</td>
-          <td data-th="Number of coins purchased">{investment.cryptoAmount}</td>
-          <td data-th="Purchase price">${investment.cryptoPrice}</td>
-          <td className={tickerColor} data-th="Current price">${investment.currentPrice} ({parseFloat(((investment.currentPrice - investment.cryptoPrice) / investment.cryptoPrice)*100).toFixed(2)}%)</td>
+          <td style={{textAlign: 'right'}} data-th="Number of coins purchased">{investment.cryptoAmount}</td>
+          <td style={{textAlign: 'right'}} data-th="Purchase price">${investment.cryptoPrice}</td>
+          <td style={{textAlign: 'right'}} className={tickerColor} data-th="Current price">${investment.currentPrice} ({parseFloat(((investment.currentPrice - investment.cryptoPrice) / investment.cryptoPrice)*100).toFixed(2)}%)</td>
         </tr>
       )
     })
 
     return(
-      <Layout title="Investments">
+      <Layout isAdmin={this.props.isAdmin} title="Investments">
         {
           this.props.isAdmin &&
           <a href="/investment/new" className="NewInvestmentButton Button Button-Primary">Add New Investment</a>
@@ -38,11 +38,11 @@ class Investments extends React.Component {
             <tr>
               <th>Client</th>
               <th>Date</th>
-              <th>USD Investment</th>
+              <th style={{textAlign: 'right'}}>USD Investment</th>
               <th>Cryptocurrency</th>
-              <th>Number of coins purchased</th>
-              <th>Purchase price</th>
-              <th>Current price</th>
+              <th style={{textAlign: 'right'}}># of coins purchased</th>
+              <th style={{textAlign: 'right'}}>Purchase price</th>
+              <th style={{textAlign: 'right'}}>Current price</th>
             </tr>
           </thead>
           <tbody>

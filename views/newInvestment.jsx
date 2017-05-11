@@ -9,7 +9,7 @@ class NewInvestment extends React.Component {
       )
     })
     return(
-      <Layout title="Investments">
+      <Layout isAdmin={true} title="Investments">
         <div className="container-full justify-center">
           <form className="Form-NewInvestment" action="/newInvestment" method="post">
             <span className="FormDescription">Please enter a few details about the investment</span>
