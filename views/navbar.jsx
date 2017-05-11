@@ -9,6 +9,11 @@ class Navbar extends React.Component {
             <a href="/">Benk.capital</a>
           </span>
           <span className="Navbar-links">
+            { this.props.isAdmin ?
+              <a href="/summary">Summary</a>
+              :
+              null
+            }
             <a href="/investments">Investments</a>
             <a href="/logout">Logout</a>
           </span>

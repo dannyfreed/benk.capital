@@ -28,7 +28,7 @@ class Investments extends React.Component {
     })
 
     return(
-      <Layout title="Investments">
+      <Layout isAdmin={this.props.isAdmin} title="Investments">
         {
           this.props.isAdmin &&
           <a href="/investment/new" className="NewInvestmentButton Button Button-Primary">Add New Investment</a>

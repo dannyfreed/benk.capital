@@ -15,7 +15,7 @@ class Summary extends React.Component {
 
 
     return(
-      <Layout title="Summary">
+      <Layout isAdmin={true} title="Summary">
         <div style={{margin:'auto', maxWidth: '500px'}}>
           <h2>Summary</h2>
           <p>This is a summary across the entire portfolio</p>
