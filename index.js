@@ -158,7 +158,7 @@ app.post("/signup", (req, res) => {
   var userId = new Date().valueOf()
   var firstName = req.body.firstName
   var lastName = req.body.lastName
-  var email = req.body.email
+  var email = req.body.email.toLowerCase()
   var password = req.body.password
   var password_confirmation = req.body.password_confirmation
   createUser(userId, firstName, lastName, email, password, password_confirmation, function(err, user){
@@ -170,7 +170,7 @@ app.post("/signup", (req, res) => {
   });
 })
 app.post("/login", (req, res) => {
-  var email = req.body.email;
+  var email = req.body.email.toLowerCase();
   var password = req.body.password;
 
   authenticateUser(email, password, function(err, user){
