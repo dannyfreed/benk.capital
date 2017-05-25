@@ -366,37 +366,48 @@ function getCoinPrices(cb) {
       console.error(err)
     }
     else {
-      var price;
       var prices = JSON.parse(body)
-
-      var bitcoinPrice = prices.USDT_BTC.last
-      var litecoinPrice = prices.USDT_LTC.last
+      // var bitcoinPrice = prices.USDT_BTC.last
+      // var litecoinPrice = prices.USDT_LTC.last
       var ethereumPrice = prices.USDT_ETH.last
       var ethereumClassicPrice = prices.USDT_ETC.last
       var golemPrice = ethereumPrice * prices.ETH_GNT.last
       var ripplePrice = prices.USDT_XRP.last
 
-      var coinPrices = [
-        { coin: 'BTC',
-          price: bitcoinPrice
-        },
-        { coin: 'LTC',
-          price: litecoinPrice
-        },
-        { coin: 'ETH',
-          price: ethereumPrice
-        },
-        { coin: 'ETC',
-          price: ethereumClassicPrice
-        },
-        { coin: 'GNT',
-          price: golemPrice
-        },
-        { coin: 'XRP',
-          price: ripplePrice
-        }
-      ]
-      cb(coinPrices)
+
+      request.get('https://api.coinbase.com/v2/prices/BTC-USD/spot', function(err, response, body){
+        var btcPriceFromCoinbase = JSON.parse(body).data.amount
+        request.get('https://api.coinbase.com/v2/prices/ETH-USD/spot', function(err, response, body){
+          var ethPriceFromCoinbase = JSON.parse(body).data.amount
+          request.get('https://api.coinbase.com/v2/prices/LTC-USD/spot', function(err, response, body){
+            var ltcPriceFromCoinbase = JSON.parse(body).data.amount
+            var coinPrices = [
+              { coin: 'BTC',
+                price: btcPriceFromCoinbase
+              },
+              { coin: 'LTC',
+                price: ltcPriceFromCoinbase
+              },
+              { coin: 'ETH',
+                price: ethPriceFromCoinbase
+              },
+              { coin: 'ETC',
+                price: ethereumClassicPrice
+              },
+              { coin: 'GNT',
+                price: golemPrice
+              },
+              { coin: 'XRP',
+                price: ripplePrice
+              }
+            ]
+            cb(coinPrices)
+          })
+        })
+      })
+
+
+
     }
   })
 }
