@@ -12,7 +12,8 @@ module.exports = function(mongoose) {
     cryptoType: { type: String },
     cryptoAmount: {type: Number },
     cryptoPrice: {type: Number },
-    user: { type: Object }
+    user: { type: Object },
+    state: { type: String, default: 'active'}
   });
 
   schema.plugin(supergoose);

@@ -96,7 +96,7 @@ app.get('/logout', function(req, res){
 app.get('/investments/:id', isAuthenticated, function(req, res){
   userModel.User.findOne({userId: req.params.id}, function(err, user){
     if (err) { console.error(err) }
-    var investmentQuery = {email: user.email};
+    var investmentQuery = {email: user.email, state: 'active'};
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
       var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
       res.render('investments', {
@@ -114,7 +114,10 @@ app.get('/investments', isAuthenticated, function(req, res) {
     if (err) { console.error(err) }
     var investmentQuery = {}
     if (!user.isAdmin) {
-      investmentQuery = {email: user.email};
+      investmentQuery = {email: user.email, state: 'active'};
+    }
+    else {
+      investmentQuery = {state: 'active'};
     }
     getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
       var roi = Math.round( ( (totalPortfolioValue - totalInvestment) / totalInvestment) * 100)
@@ -143,7 +146,7 @@ app.get('/investment/new', isAuthenticated, function(req, res) {
   })
 })
 app.get('/summary', isAuthenticatedAndAdmin, function(req, res) {
-  var investmentQuery = {} //Only admins will have access to this route right now, so show all clients
+  var investmentQuery = {state: 'active'} //Only admins will have access to this route right now, so show all clients
   getInvestments(investmentQuery, function(investments, totalPortfolioValue, totalInvestment) {
     getCoinSummary(investments, function(coinSummary){
       res.render('summary', {
