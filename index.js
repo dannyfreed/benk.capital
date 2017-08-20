@@ -412,7 +412,7 @@ function getCoinPrices(cb) {
               },
               {
                 coin:'NEO',
-                price: Math.round(data['result']['Bid']*ethPriceFromCoinbase * 100)/100
+                price: Math.round(data['result']['Bid']*ethereumPrice * 100)/100
               }
             ]
             cb(coinPrices)
