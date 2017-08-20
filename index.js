@@ -1,7 +1,7 @@
 var dotenv = require('dotenv');
 dotenv.load();
 
-const URL = 'mongodb://127.0.0.1:27017';
+const URL = process.env.MONGODB_URI;
 const SALT_ROUNDS = 10;
 var bittrex = require('node.bittrex.api');
 bittrex.options({
@@ -28,7 +28,7 @@ const investmentModel = require('./models/investments.js')(mongoose);
 var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };
 // Mongo parameters
-const MONGODB_URI = 'mongodb://127.0.0.1:27017';
+const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   throw new Error('missing MONGODB_URI');
 }
