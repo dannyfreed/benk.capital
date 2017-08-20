@@ -1,13 +1,9 @@
 var dotenv = require('dotenv');
 dotenv.load();
 
-const URL = 'mongodb://127.0.0.1:27017';
+const URL = process.env.MONGODB_URI
 const SALT_ROUNDS = 10;
-var bittrex = require('node.bittrex.api');
-bittrex.options({
-  'apikey' : '2f80eb2af60547dba83d840568ac76f8',
-  'apisecret' : '9fd2d5ff922c44dcb5c1892843b591bd',
-});
+
 const express = require('express')
 const bodyParser = require('body-parser');
 const app = express();
@@ -28,7 +24,7 @@ const investmentModel = require('./models/investments.js')(mongoose);
 var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
 replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } };
 // Mongo parameters
-const MONGODB_URI = 'mongodb://127.0.0.1:27017';
+const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   throw new Error('missing MONGODB_URI');
 }
@@ -387,9 +383,6 @@ function getCoinPrices(cb) {
         request.get('https://api.coinbase.com/v2/prices/ETH-USD/spot', function(err, response, body){
           var ethPriceFromCoinbase = JSON.parse(body).data.amount
           request.get('https://api.coinbase.com/v2/prices/LTC-USD/spot', function(err, response, body){
-
-            bittrex.getticker( { market : 'ETH-NEO' }, function( data, err ) {
-
             var ltcPriceFromCoinbase = JSON.parse(body).data.amount
             var coinPrices = [
               { coin: 'BTC',
@@ -409,17 +402,12 @@ function getCoinPrices(cb) {
               },
               { coin: 'XRP',
                 price: ripplePrice
-              },
-              {
-                coin:'NEO',
-                price: Math.round(data['result']['Bid']*ethPriceFromCoinbase * 100)/100
               }
             ]
             cb(coinPrices)
           })
         })
       })
-      });
 
 
 
