@@ -5,7 +5,7 @@ class NewInvestment extends React.Component {
   render() {
     const clientDropdownNodes = this.props.userEmailsAndNames.map((user, index) => {
       return(
-        <option value={user.email}>{user.firstName + ' ' + user.lastName}</option>
+        <option key={index} value={user.email}>{user.firstName + ' ' + user.lastName}</option>
       )
     })
     return(
