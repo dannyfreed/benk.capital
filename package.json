@@ -32,5 +32,8 @@
     "react-dom": "^15.5.4",
     "request": "^2.81.0",
     "supergoose": "^0.2.6"
+  },
+  "engines": {
+    "node": "12.13.0"
   }
 }
