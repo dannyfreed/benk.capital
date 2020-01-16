@@ -379,7 +379,7 @@ function getCoinPrices(cb) {
       // var litecoinPrice = prices.USDT_LTC.last
       var ethereumPrice = prices.USDT_ETH.last
       var ethereumClassicPrice = prices.USDT_ETC.last
-      var golemPrice = ethereumPrice * prices.ETH_GNT.last
+      var golemPrice = prices.USDT_GNT.last
       var ripplePrice = prices.USDT_XRP.last
 
 
